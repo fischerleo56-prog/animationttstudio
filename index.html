@@ -13,26 +13,19 @@ canvas{display:block;background:transparent!important}
 <canvas id="c"></canvas>
 <script>
 const c=document.getElementById("c"),ctx=c.getContext("2d");
-function resize(){c.width=innerWidth;c.height=c.height=innerHeight}
+function resize(){c.width=innerWidth;c.height=innerHeight}
 addEventListener("resize",resize);resize();
 
 const runes=["ᚠ","ᚢ","ᚱ","ᛃ","ᛟ","ᛞ","ᛉ","ᛇ","ᛋ","✦"];
 const cols=[];
 for(let i=0;i<26;i++){
-  cols.push({
-    x:(i+0.5)*innerWidth/26,
-    y:Math.random()*140,
-    s:18+Math.random()*12,
-    p:Math.random()*6.28
-  });
+  cols.push({x:(i+0.5)*innerWidth/26,y:Math.random()*140,s:18+Math.random()*12,p:Math.random()*6.28});
 }
 
 let t=0;
 (function loop(){
   requestAnimationFrame(loop);
   t+=0.015;
-
-  // Transparenter Hintergrund statt schwarzer Fläche
   ctx.clearRect(0,0,c.width,c.height);
 
   const top=ctx.createLinearGradient(0,0,0,180);
@@ -48,7 +41,7 @@ let t=0;
     const r=cols[i];
     const yy=r.y+Math.sin(t+r.p)*8;
     ctx.font=r.s+"px serif";
-    ctx.fillStyle="rgba(220,220,220,0.16)";
+    ctx.fillStyle="rgba(0,0,0,1)";
     ctx.fillText(runes[i%runes.length],r.x,yy);
   }
 
@@ -59,8 +52,6 @@ let t=0;
   g.addColorStop(1,"rgba(255,255,255,0)");
   ctx.fillStyle=g;
   ctx.fillRect(0,0,c.width,170);
-
-  // Schwarzes Fade entfernt, damit Alpha erhalten bleibt
 })();
 </script>
 </body>
