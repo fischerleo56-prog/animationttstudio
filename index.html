@@ -3,69 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ocean Horizon</title>
+<title>Top Eclipse Ring</title>
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#02060a}
+html,body{margin:0;height:100%;overflow:hidden;background:#030303}
 canvas{display:block}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <script>
-const c=document.getElementById("c"),x=c.getContext("2d");
+const c=document.getElementById("c"),ctx=c.getContext("2d");
 function resize(){c.width=innerWidth;c.height=innerHeight}
 addEventListener("resize",resize);resize();
-
 let t=0;
-function wave(y,amp,freq,speed,a){
-  x.beginPath();
-  for(let px=0;px<=c.width;px+=6){
-    const py=y+Math.sin(px*freq+t*speed)*amp+Math.cos(px*freq*0.45+t*speed*0.6)*amp*0.35;
-    if(px===0)x.moveTo(px,py); else x.lineTo(px,py);
-  }
-  x.lineTo(c.width,c.height);
-  x.lineTo(0,c.height);
-  x.closePath();
-  x.fillStyle=`rgba(255,255,255,${a})`;
-  x.fill();
-}
-
 function draw(){
  requestAnimationFrame(draw);
  t+=0.002;
+ ctx.fillStyle="#030303";
+ ctx.fillRect(0,0,c.width,c.height);
 
- const bg=x.createLinearGradient(0,0,0,c.height);
- bg.addColorStop(0,"#0b1016");
- bg.addColorStop(1,"#02060a");
- x.fillStyle=bg;
- x.fillRect(0,0,c.width,c.height);
+ const cx=c.width/2, cy=120;
+ const r=85;
 
- // Mond
- const moon=x.createRadialGradient(c.width*0.75,c.height*0.22,0,c.width*0.75,c.height*0.22,70);
- moon.addColorStop(0,"rgba(255,255,255,.55)");
- moon.addColorStop(1,"rgba(255,255,255,0)");
- x.fillStyle=moon;
- x.beginPath();
- x.arc(c.width*0.75,c.height*0.22,70,0,Math.PI*2);
- x.fill();
+ // glow
+ let g=ctx.createRadialGradient(cx,cy,0,cx,cy,170);
+ g.addColorStop(0,"rgba(255,255,255,0.08)");
+ g.addColorStop(1,"rgba(255,255,255,0)");
+ ctx.fillStyle=g;
+ ctx.beginPath();ctx.arc(cx,cy,170,0,Math.PI*2);ctx.fill();
 
- // Sterne
- for(let i=0;i<70;i++){
-   const sx=(i*193)%c.width;
-   const sy=(i*131)%(c.height*0.45);
-   x.fillStyle="rgba(255,255,255,.18)";
-   x.fillRect(sx,sy,1.2,1.2);
+ // ring
+ ctx.beginPath();
+ ctx.arc(cx,cy,r,0,Math.PI*2);
+ ctx.lineWidth=5;
+ ctx.strokeStyle="rgba(255,255,255,0.18)";
+ ctx.stroke();
+
+ // rotating arc
+ ctx.beginPath();
+ ctx.arc(cx,cy,r,-Math.PI/3+t,Math.PI/7+t);
+ ctx.lineWidth=7;
+ ctx.strokeStyle="rgba(255,255,255,0.45)";
+ ctx.stroke();
+
+ // center
+ ctx.beginPath();
+ ctx.arc(cx,cy,r-18,0,Math.PI*2);
+ ctx.fillStyle="#050505";
+ ctx.fill();
+
+ // subtle rays
+ for(let i=0;i<10;i++){
+   const a=i*Math.PI/5+t*0.15;
+   ctx.beginPath();
+   ctx.moveTo(cx+Math.cos(a)*(r+10),cy+Math.sin(a)*(r+10));
+   ctx.lineTo(cx+Math.cos(a)*(r+40),cy+Math.sin(a)*(r+40));
+   ctx.strokeStyle="rgba(255,255,255,0.05)";
+   ctx.stroke();
  }
 
- wave(c.height*0.70,8,0.010,0.7,0.05);
- wave(c.height*0.76,10,0.012,0.9,0.07);
- wave(c.height*0.83,12,0.014,1.1,0.09);
-
- // Reflexion
- x.fillStyle="rgba(255,255,255,0.02)";
- x.fillRect(c.width*0.74,c.height*0.22,4,c.height);
+ // fade to bottom
+ let fade=ctx.createLinearGradient(0,0,0,c.height);
+ fade.addColorStop(0,"rgba(0,0,0,0)");
+ fade.addColorStop(.35,"rgba(0,0,0,0.15)");
+ fade.addColorStop(1,"rgba(0,0,0,0.75)");
+ ctx.fillStyle=fade;
+ ctx.fillRect(0,0,c.width,c.height);
 }
 draw();
 </script>
-</body>
-</html>
+</body></html>
