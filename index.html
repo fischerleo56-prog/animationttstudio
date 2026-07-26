@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ocean Horizon</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#02060a}
+canvas{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById("c"),x=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight}
+addEventListener("resize",resize);resize();
+
+let t=0;
+function wave(y,amp,freq,speed,a){
+  x.beginPath();
+  for(let px=0;px<=c.width;px+=6){
+    const py=y+Math.sin(px*freq+t*speed)*amp+Math.cos(px*freq*0.45+t*speed*0.6)*amp*0.35;
+    if(px===0)x.moveTo(px,py); else x.lineTo(px,py);
+  }
+  x.lineTo(c.width,c.height);
+  x.lineTo(0,c.height);
+  x.closePath();
+  x.fillStyle=`rgba(255,255,255,${a})`;
+  x.fill();
+}
+
+function draw(){
+ requestAnimationFrame(draw);
+ t+=0.002;
+
+ const bg=x.createLinearGradient(0,0,0,c.height);
+ bg.addColorStop(0,"#0b1016");
+ bg.addColorStop(1,"#02060a");
+ x.fillStyle=bg;
+ x.fillRect(0,0,c.width,c.height);
+
+ // Mond
+ const moon=x.createRadialGradient(c.width*0.75,c.height*0.22,0,c.width*0.75,c.height*0.22,70);
+ moon.addColorStop(0,"rgba(255,255,255,.55)");
+ moon.addColorStop(1,"rgba(255,255,255,0)");
+ x.fillStyle=moon;
+ x.beginPath();
+ x.arc(c.width*0.75,c.height*0.22,70,0,Math.PI*2);
+ x.fill();
+
+ // Sterne
+ for(let i=0;i<70;i++){
+   const sx=(i*193)%c.width;
+   const sy=(i*131)%(c.height*0.45);
+   x.fillStyle="rgba(255,255,255,.18)";
+   x.fillRect(sx,sy,1.2,1.2);
+ }
+
+ wave(c.height*0.70,8,0.010,0.7,0.05);
+ wave(c.height*0.76,10,0.012,0.9,0.07);
+ wave(c.height*0.83,12,0.014,1.1,0.09);
+
+ // Reflexion
+ x.fillStyle="rgba(255,255,255,0.02)";
+ x.fillRect(c.width*0.74,c.height*0.22,4,c.height);
+}
+draw();
+</script>
+</body>
+</html>
